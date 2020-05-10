@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<htm>
+
+    <head>
+        <script src="https://unpkg.com/konva@4.2.2/konva.min.js"></script>
+        <meta charset="utf-8">
+        <title>Animal on Beach</title>
+        <link rel="stylesheet" type="text/css" href="animalstyle.css">
+    </head>
+
+    <body>
+        <div id="container"></div>
+        <script>
+            var bkimage = "beach"
+            var animals = ["monkey", "lion", "giraffe", "snake"]
+            var paths = {
+                monkey: { sx: 275, sy: 70, ex: 300, ey: 420 },
+                lion: { sx: 400, sy: 70, ex: 100, ey: 390 },
+                giraffe: { sx: 90, sy: 70, ex: 390, ey: 250 },
+                snake: { sx: 10, sy: 70, ex: 275, ey: 350 },
+            }
+            var loadedImages = 0;
+            loadImages(bkimage, animals, initStage);
+
+            function loadImages(bgimg, fgimgs, callback) {
+                var assetDir = 'assets/';
+                var variants = ["", "_black", "_glow"];
+                var images = {};
+                var sources = [bgimg];
+                for (var i = 0; i < fgimgs.length; i++) {
+                    for (var j = 0; j < variants.length; j++) {
+                        sources.push(fgimgs[i] + variants[j]);
+                        console.log(sources);
+                    }
+                }
+                var numImages = sources.length;
+                for (var i = 0; i < sources.length; i++) {
+                    var src = sources[i];
+                    images[src] = new Image();
+                    images[src].src = assetDir + src + '.png';
+                    images[src].onload = function () {
+                        if (++loadedImages >= numImages) {
+                            callback(images);
+                        }
+
+                    }
+                }
+
+
+            }
+            function drawBackground(background, bgImg, text) {
+                var context = background.getContext();
+                context.drawImage(bgImg, 0, 0);
+                context.setAttr('font', '20pt Calibri');
+                context.setAttr('textAlign', 'center');
+                context.setAttr('fillStyle', 'white');
+                context.fillText(text, background.getStage().width() / 2, 40);
+            }
+            function initStage(images) {
+                console.log("This is initStage()");
+
+                var stage = new Konva.Stage({
+                    container: 'container',
+                    width: 578,
+                    height: 530
+                });
+
+                var background = new Konva.Layer();
+                stage.add(background);
+                var context = background.getContext();
+                context.drawImage(images[bkimage], 0, 0);
+                var animalLayer = new Konva.Layer();
+                for (var key in paths) {
+                    var img = new Konva.Image({
+                        image: images[key],
+                        x: paths[key].sx,
+                        y: paths[key].sy
+                    });
+                    animalLayer.add(img);
+                }
+                stage.add(animalLayer);
+                drawBackground(background, images[bkimage],  'Ahoy! Put the animals on the beach!');
+            }
+            
+
+
+
+
+        </script>
+    </body>
+</htm>
